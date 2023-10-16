@@ -1,0 +1,12 @@
+Packages/
+dtbo/devicetree/
+dtbo/pl.dtbo
+hls/camera_rotate_proj/
+hls/vitis_hls.log
+target/
+vitis/.analytics
+vitis/.metadata/
+vitis/IDE.log
+vitis/RemoteSystemsTempFiles/
+vitis/ip_cache/
+

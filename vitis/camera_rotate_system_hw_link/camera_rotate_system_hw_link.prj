@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ASCII"?>
+<hwlink:HwLinkProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hwlink="http://www.xilinx.com/acceleration/hwlink" name="camera_rotate_system_hw_link" platform="/home/heneri/Dokumente/rslab/kv260_extensible_hw_platform/kv260_platform/kv260_platform.xpfm" systemProject="camera_rotate_system" cpu="pl">
+  <configuration name="Emulation-SW" id="com.xilinx.ide.accel.config.hwlink.sw_emu.934968491">
+    <configBuildOptions xsi:type="hwlink:LinkOptions">
+      <binaryContainers name="binary_container_1">
+        <kernels name="krnl_vadd" projectName="camera_rotate_kernels" kernelType="PRECOMPILED_KERNEL">
+          <computeUnits name="krnl_vadd_1" slr=""/>
+        </kernels>
+      </binaryContainers>
+    </configBuildOptions>
+  </configuration>
+  <configuration name="Emulation-HW" id="com.xilinx.ide.accel.config.hwlink.hw_emu.730318818">
+    <configBuildOptions xsi:type="hwlink:LinkOptions" target="hw_emu">
+      <binaryContainers name="binary_container_1">
+        <kernels name="krnl_vadd" projectName="camera_rotate_kernels" kernelType="PRECOMPILED_KERNEL">
+          <computeUnits name="krnl_vadd_1" slr=""/>
+        </kernels>
+      </binaryContainers>
+    </configBuildOptions>
+  </configuration>
+  <configuration name="Hardware" id="com.xilinx.ide.accel.config.hwlink.hw.506928067">
+    <configBuildOptions xsi:type="hwlink:LinkOptions" target="hw" exportHw="true">
+      <binaryContainers name="binary_container_1">
+        <kernels name="krnl_vadd" projectName="camera_rotate_kernels" kernelType="PRECOMPILED_KERNEL">
+          <computeUnits name="krnl_vadd_1" slr=""/>
+        </kernels>
+      </binaryContainers>
+    </configBuildOptions>
+    <lastBuildOptions xsi:type="hwlink:LinkOptions" target="hw" exportHw="true">
+      <binaryContainers name="binary_container_1">
+        <kernels name="krnl_vadd" projectName="camera_rotate_kernels" kernelType="PRECOMPILED_KERNEL">
+          <computeUnits name="krnl_vadd_1" slr=""/>
+        </kernels>
+      </binaryContainers>
+    </lastBuildOptions>
+  </configuration>
+</hwlink:HwLinkProject>
