@@ -1,22 +1,11 @@
-/**
- * @file krn_vadd.h
- * @author Frank Kesel
- * @date 29 Nov 2022
- * @version 1.0
- * @brief Vector addition HLS demo
- * @details
- */
+#pragma once
 
+#include <stdint.h>
+#include <ap_int.h>
 
-#ifndef SRC_KRNL_VADD_H_
-#define SRC_KRNL_VADD_H_
+using Pixel = ap_uint<24>;
+static constexpr uint64_t MAX_PIXELS =  3840 * 2160;
 
-// Define the data size for vector addition
-#define DATA_SIZE 1024
+void krnl_vadd(Pixel *src_ptr, Pixel *dst_ptr, uint16_t rows, uint16_t cols,
+		uint8_t direction);
 
-// TRIPCOUNT identifier for HLS to be able to calculate tripcounts
-const int c_size = DATA_SIZE;
-
-void krnl_vadd(uint32_t* in1, uint32_t* in2, uint32_t* out, int size);
-
-#endif /* SRC_KRNL_VADD_H_ */

@@ -1,3 +1,7 @@
+# Camera rotate
+
+## Setup
+
 ```bash
 source setup.sh
 
@@ -16,3 +20,11 @@ popd
 
 ./deploy.sh
 ```
+
+## Actions
+
+Potentially useful:
+
+[remap](https://xilinx.github.io/Vitis_Libraries/vision/2022.1/api-reference.html#remap) relocates pixels in an image. Could maybe suport 4k30fps
+[rotate](https://xilinx.github.io/Vitis_Libraries/vision/2022.1/api-reference.html#rotate) only for multiples of 90 degree.
+
