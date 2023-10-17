@@ -9,4 +9,6 @@ vitis/.metadata/
 vitis/IDE.log
 vitis/RemoteSystemsTempFiles/
 vitis/ip_cache/
+vitis_hls.log
+xrc.log
 
