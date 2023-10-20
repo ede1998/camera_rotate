@@ -8,11 +8,11 @@
 #include "krnl_vadd.h"
 
 int main(){
-	const auto in = cv::imread("/home/heneri/Dokumente/rslab/camera_rotate/hls/test.png", cv::IMREAD_COLOR);
+	const auto in = cv::imread("/home/heneri/Dokumente/rslab/camera_rotate/hls/test.png", cv::IMREAD_GRAYSCALE);
 	assert(in.channels() == BITS_PER_PIXEL / 8);
 	assert(in.rows > 10);
 	assert(in.cols > 10);
-//	static_assert(sizeof(Pixel) == BITS_PER_PIXEL / 8);
+	static_assert(sizeof(Pixel) == BITS_PER_PIXEL / 8);
 	assert(in.data != nullptr && "Failed to load image");
 	auto out_mat = cv::Mat(in.rows, in.cols, in.type());
 	assert(out_mat.data != nullptr);
@@ -35,4 +35,5 @@ int main(){
 //		std::cout<<"Test passed!"<<std::endl;
 //	}
 //	std::cout << "-----------------------------"<<std::endl;
+	return 0;
 }

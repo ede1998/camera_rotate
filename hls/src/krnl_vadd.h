@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <ap_int.h>
 
-static constexpr int BITS_PER_PIXEL = 3*8;
+static constexpr int BITS_PER_PIXEL = 8;
 using Pixel = ap_uint<BITS_PER_PIXEL>;
 static constexpr uint64_t MAX_ROWS = 2160;
 static constexpr uint64_t MAX_COLS = 3840;

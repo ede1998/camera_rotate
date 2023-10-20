@@ -2,7 +2,7 @@
 
 #include <imgproc/xf_rotate.hpp>
 
-static constexpr int __XF_DEPTH = (MAX_PIXELS * (XF_PIXELWIDTH(XF_8UC3, XF_NPPC1)) / 8) / (BITS_PER_PIXEL / 8);
+static constexpr int __XF_DEPTH = (MAX_PIXELS * (XF_PIXELWIDTH(XF_8UC1, XF_NPPC1)) / 8) / (BITS_PER_PIXEL / 8);
 
 void krnl_vadd(Pixel *src_ptr, Pixel *dst_ptr, uint16_t rows, uint16_t cols,
 		uint8_t direction) {
@@ -23,7 +23,7 @@ void krnl_vadd(Pixel *src_ptr, Pixel *dst_ptr, uint16_t rows, uint16_t cols,
 
 //  xf::cv::Array2xfMat<DATA_WIDTH, TYPE8, MAX_HEIGHT, MAX_WIDTH, NPC>(src_ptr, src);
 
-	xf::cv::rotate<BITS_PER_PIXEL, BITS_PER_PIXEL, XF_8UC3, 32, MAX_ROWS, MAX_COLS, XF_NPPC1>(src_ptr, dst_ptr, rows, cols, direction);
+	xf::cv::rotate<BITS_PER_PIXEL, BITS_PER_PIXEL, XF_8UC1, 32, MAX_ROWS, MAX_COLS, XF_NPPC1>(src_ptr, dst_ptr, rows, cols, direction);
 //	xf::cv::xfMat2Array<DATA_WIDTH, TYPE8, MAX_HEIGHT, MAX_WIDTH, NPC>(dst, dst_ptr);
 
 }
