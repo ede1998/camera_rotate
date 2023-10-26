@@ -32,3 +32,4 @@ Potentially useful:
 - bad documentation: headers not well documented for vision library
 - assumption: vision library already installed on system
 - bad error messages: input pixel width must be power of 2 -> weird runtime errors
+- bad error messages: too large height/width template parameter -> crashes testbench during co-sim but not c-sim
