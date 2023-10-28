@@ -171,6 +171,16 @@
                             							
                             <tool id="com.xilinx.ide.accel.tool.gcc_compiler.hw.aarch64.495586174" name="GCC Host Compiler (ARMv8-A for A53/A72 - 64 bit)" superClass="com.xilinx.ide.accel.tool.gcc_compiler.hw.aarch64">
                                 								
+                                <option id="com.xilinx.ide.accel.cpp.compiler.include.paths.aarch64.874513180" name="Include paths (-I)" superClass="com.xilinx.ide.accel.cpp.compiler.include.paths.aarch64" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="${env_var:XILINX_HLS}/include/"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${SYSROOT}/usr/include/xrt/"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/opt/opencv/include/opencv4"/>
+                                    								
+                                </option>
+                                								
                                 <inputType id="com.xilinx.ide.accel.managedbuild.input.cpp.aarch64.1953670631" superClass="com.xilinx.ide.accel.managedbuild.input.cpp.aarch64"/>
                                 								
                                 <inputType id="com.xilinx.ide.accel.managedbuild.input.c.aarch64.858196124" superClass="com.xilinx.ide.accel.managedbuild.input.c.aarch64"/>
@@ -183,6 +193,16 @@
                                     									
                                     <listOptionValue builtIn="false" value="xilinxopencl"/>
                                     									
+                                    <listOptionValue builtIn="false" value="opencv_videoio"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="opencv_core"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="opencv_imgproc"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="opencv_imgcodecs"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="opencv_highgui"/>
+                                    									
                                     <listOptionValue builtIn="false" value="xrt_coreutil"/>
                                     									
                                     <listOptionValue builtIn="false" value="pthread"/>
@@ -194,6 +214,14 @@
                                     <listOptionValue builtIn="false" value="crypt"/>
                                     									
                                     <listOptionValue builtIn="false" value="stdc++"/>
+                                    								
+                                </option>
+                                								
+                                <option id="com.xilinx.ide.accel.cpp.linker.option.paths.aarch64.77029580" name="Library search path (-L)" superClass="com.xilinx.ide.accel.cpp.linker.option.paths.aarch64" useByScannerDiscovery="false" valueType="libPaths">
+                                    									
+                                    <listOptionValue builtIn="false" value="${SYSROOT}/usr/lib/"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/opt/opencv/lib"/>
                                     								
                                 </option>
                                 								
