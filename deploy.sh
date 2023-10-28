@@ -16,4 +16,4 @@ cat > target/shell.json << EOF
 }
 EOF
 
-
+scp -r -A -J erik@$REVERSE_SSH_IP target/ ubuntu@192.168.140.252:/home/ubuntu/projects/camera_rotate-$(date +"%Y-%m-%dT%H-%M-%S")

@@ -33,3 +33,22 @@ Potentially useful:
 - assumption: vision library already installed on system
 - bad error messages: input pixel width must be power of 2 -> weird runtime errors
 - bad error messages: too large height/width template parameter -> crashes testbench during co-sim but not c-sim
+- opencv -> uses shared lib -> does not find opencv on Kria -> different arch -> no simple copying, opencv is already installed but in version 4.5.4d (program wants 4.5) -> create symlinks
+
+
+## SSH
+
+```bash
+# one time:
+sudo ssh-keygen -A
+# every time:
+echo $VPN_PASSWORD | sudo openconnect vpnstud.hs-pforzheim.de --user=$VPN_USER --passwd-on-stdin --background
+sshd
+ssh $VPN_USER@$XILINX_SERVER
+# one time:
+ssh-copy-id $VPN_USER@$XILINX_SERVER
+# and to kria too (~/.ssh/authorized_keys)
+
+# on server:
+ssh -A -J $HOST_USER@$(echo $SSH_CLIENT | sed 's/ .*//) ubuntu@$KRIA_LOCAL_IP
+```
