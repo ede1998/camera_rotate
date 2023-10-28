@@ -35,6 +35,11 @@ Potentially useful:
 - bad error messages: too large height/width template parameter -> crashes testbench during co-sim but not c-sim
 - opencv -> uses shared lib -> does not find opencv on Kria -> different arch -> no simple copying, opencv is already installed but in version 4.5.4d (program wants 4.5) -> create symlinks
 
+## Ideas
+
+use smartphone gyro sensor with awesome sensor logger -> report via http the devide orientation
+stick camera to phone with some rubber band
+
 
 ## SSH
 
