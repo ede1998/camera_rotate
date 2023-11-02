@@ -171,9 +171,19 @@
                             							
                             <tool id="com.xilinx.ide.accel.tool.gcc_compiler.hw.aarch64.495586174" name="GCC Host Compiler (ARMv8-A for A53/A72 - 64 bit)" superClass="com.xilinx.ide.accel.tool.gcc_compiler.hw.aarch64">
                                 								
-                                <option id="com.xilinx.ide.accel.cpp.compiler.option.dialect.std.aarch64.206739433" superClass="com.xilinx.ide.accel.cpp.compiler.option.dialect.std.aarch64" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+                                <option id="com.xilinx.ide.accel.cpp.compiler.option.dialect.std.aarch64.206739433" name="Language standard" superClass="com.xilinx.ide.accel.cpp.compiler.option.dialect.std.aarch64" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
                                 								
-                                <option id="gnu.cpp.compiler.option.dialect.flags.1067259265" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=c++17" valueType="string"/>
+                                <option id="gnu.cpp.compiler.option.dialect.flags.1067259265" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=c++17" valueType="string"/>
+                                								
+                                <option id="com.xilinx.ide.accel.cpp.compiler.include.paths.aarch64.1561708477" superClass="com.xilinx.ide.accel.cpp.compiler.include.paths.aarch64" useByScannerDiscovery="false" valueType="includePath">
+                                    									
+                                    <listOptionValue builtIn="false" value="${env_var:XILINX_HLS}/include/"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="/opt/opencv/include/opencv4"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="${SYSROOT}/usr/include/xrt/"/>
+                                    								
+                                </option>
                                 								
                                 <inputType id="com.xilinx.ide.accel.managedbuild.input.cpp.aarch64.1953670631" superClass="com.xilinx.ide.accel.managedbuild.input.cpp.aarch64"/>
                                 								
@@ -188,6 +198,16 @@
                                     <listOptionValue builtIn="false" value="xilinxopencl"/>
                                     									
                                     <listOptionValue builtIn="false" value="xrt_coreutil"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="opencv_videoio"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="opencv_core"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="opencv_imgproc"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="opencv_imgcodecs"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="opencv_highgui"/>
                                     									
                                     <listOptionValue builtIn="false" value="pthread"/>
                                     									
