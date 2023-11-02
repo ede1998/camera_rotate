@@ -1,16 +1,6 @@
-/**
- * @file host.cpp
- * @author Frank Kesel
- * @date 12 Dec 2022
- * @version 1.0
- * @brief Host application for vector add demo
- * @details
- */
-
 #include <iostream>
 #include <string>
 #include <chrono>
-using namespace std;
 
 // XRT includes
 #include "xrt/xrt_bo.h"
@@ -18,35 +8,35 @@ using namespace std;
 #include "xrt/xrt_kernel.h"
 
 // Makros for time measurements
-#define START_MEASUREMENT start_time = chrono::high_resolution_clock::now();
-#define END_MEASUREMENT(var) 	end_time = chrono::high_resolution_clock::now(); \
-		auto var = chrono::duration_cast<chrono::microseconds>(end_time \
+#define START_MEASUREMENT start_time = std::chrono::high_resolution_clock::now();
+#define END_MEASUREMENT(var) 	end_time = std::chrono::high_resolution_clock::now(); \
+		auto var = std::chrono::duration_cast<std::chrono::microseconds>(end_time \
 		- start_time).count();
 
 int main(int argc, char** argv) {
 	// Check the command line args
 	if (argc < 3) {
-	    std::cerr << "usage: vadd <xclbin-file> <data-size>\n";
+	    std::cerr << "usage: camera_rotate <xclbin-file> <img>\n";
 	    return EXIT_FAILURE;
 	}
 
 	// Define variables for time measurement
-	auto start_time = chrono::high_resolution_clock::now();
-	auto end_time = chrono::high_resolution_clock::now();
+	auto start_time = std::chrono::high_resolution_clock::now();
+	auto end_time = std::chrono::high_resolution_clock::now();
 
 	//Define binary file and device index
-    string binaryFile = argv[1];
+    std::string binaryFile = argv[1];
     int device_index = 0; //Device index should be 0 on the Kria board
 
     // Define data size from args and vector size for buffers in byte
-    int data_size = stoi(argv[2]);
+    int data_size = std::stoi(argv[2]);
     size_t vector_size_bytes = sizeof(int) * data_size;
 
     int error_flag = 0; //Error flag
 
-    cout << "-------------------------------------------------------------------"<<endl;
-    cout << "-- vadd host program                                             --"<<endl;
-    cout << "-------------------------------------------------------------------"<<endl;
+    std::cout << "-------------------------------------------------------------------"<<std::endl;
+    std::cout << "-- vadd host program                                             --"<<std::endl;
+    std::cout << "-------------------------------------------------------------------"<<std::endl;
 
     //Open device
     auto device = xrt::device(device_index);
@@ -54,10 +44,10 @@ int main(int argc, char** argv) {
     //Get the kernel object from xclbin:
     //Load the xclbin file and get UUID.
     //The UUID is needed to open the kernel from the device.
-    cout << "Load the xclbin: " << binaryFile << endl;
+    std::cout << "Load the xclbin: " << binaryFile << std::endl;
     auto uuid = device.load_xclbin(binaryFile);
     // Get some information on the device
-    cout << "Device name: " << device.get_info<xrt::info::device::name>() << "\n";
+    std::cout << "Device name: " << device.get_info<xrt::info::device::name>() << "\n";
     //Then get the kernel object from the UUID, "krnl_vadd" is the name of the kernel
     auto krnl = xrt::kernel(device, uuid, "krnl_vadd");
 
@@ -65,7 +55,7 @@ int main(int argc, char** argv) {
     // same memory bank as the kernel interfaces group id.
     // The group_id is the argument index of the HLS function.
     // The kernel has the following arguments (see HLS):
-    // void krnl_vadd(uint32_t* in1, uint32_t* in2, uint32_t* out, int size);
+    // void krnl_vadd(Pixel *src_ptr, Pixel *dst_ptr, uint16_t rows, uint16_t cols,	uint8_t direction);
     // in1, in2 and out are master interfaces with memory buffers to be allocated.
     // size is a register in the kernel (slave interface) and needs no buffer.
     auto bo0 = xrt::bo(device, vector_size_bytes, krnl.group_id(0));
@@ -116,19 +106,19 @@ int main(int argc, char** argv) {
     }
 
     // Final verdict
-    cout << "-------------------------------------------------------------------"<<endl;
+    std::cout << "-------------------------------------------------------------------"<<std::endl;
     if(error_flag == 1)
-    	cout << "Test FAILED!" << endl;
+    	std::cout << "Test FAILED!" << std::endl;
     else
-    	cout << "Test PASSED!" << endl;
+    	std::cout << "Test PASSED!" << std::endl;
 
     //Get some info on execution times
-    cout << "-------------------------------------------------------------------"<<endl;
-    cout << "Data size transferred (array size): " << data_size << endl;
-	cout << "Execution time kernel: " << duration_kernel << " us" << endl;
-	cout << "Transfer time to/from kernel memory: " << duration_trf1 << " us + " << duration_trf2
-			<< " us =  "<< duration_trf1+duration_trf2 << " us" << endl;
-    cout << "-------------------------------------------------------------------"<<endl;
+    std::cout << "-------------------------------------------------------------------"<<std::endl;
+    std::cout << "Data size transferred (array size): " << data_size << std::endl;
+	std::cout << "Execution time kernel: " << duration_kernel << " us" << std::endl;
+	std::cout << "Transfer time to/from kernel memory: " << duration_trf1 << " us + " << duration_trf2
+			<< " us =  "<< duration_trf1+duration_trf2 << " us" << std::endl;
+    std::cout << "-------------------------------------------------------------------"<<std::endl;
 
     return 0;
 }

@@ -171,6 +171,10 @@
                             							
                             <tool id="com.xilinx.ide.accel.tool.gcc_compiler.hw.aarch64.495586174" name="GCC Host Compiler (ARMv8-A for A53/A72 - 64 bit)" superClass="com.xilinx.ide.accel.tool.gcc_compiler.hw.aarch64">
                                 								
+                                <option id="com.xilinx.ide.accel.cpp.compiler.option.dialect.std.aarch64.206739433" superClass="com.xilinx.ide.accel.cpp.compiler.option.dialect.std.aarch64" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+                                								
+                                <option id="gnu.cpp.compiler.option.dialect.flags.1067259265" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=c++17" valueType="string"/>
+                                								
                                 <inputType id="com.xilinx.ide.accel.managedbuild.input.cpp.aarch64.1953670631" superClass="com.xilinx.ide.accel.managedbuild.input.cpp.aarch64"/>
                                 								
                                 <inputType id="com.xilinx.ide.accel.managedbuild.input.c.aarch64.858196124" superClass="com.xilinx.ide.accel.managedbuild.input.c.aarch64"/>
