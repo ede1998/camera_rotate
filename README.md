@@ -34,6 +34,7 @@ Potentially useful:
 - bad error messages: input pixel width must be power of 2 -> weird runtime errors
 - bad error messages: too large height/width template parameter -> crashes testbench during co-sim but not c-sim
 - opencv -> uses shared lib -> does not find opencv on Kria -> different arch -> no simple copying, opencv is already installed but in version 4.5.4d (program wants 4.5) -> create symlinks
+- xmutil fails to load image -> daemon logs say "no accel found" -> manually adding in /lib/firmware/xilinx (and renaming xclbin -> bin) works -> starting program -> stuck at loading xclbin file -> reboot helped?
 
 ## Ideas
 
