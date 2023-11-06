@@ -35,10 +35,11 @@ Potentially useful:
 - bad error messages: too large height/width template parameter -> crashes testbench during co-sim but not c-sim
 - opencv -> uses shared lib -> does not find opencv on Kria -> different arch -> no simple copying, opencv is already installed but in version 4.5.4d (program wants 4.5) -> create symlinks
 - xmutil fails to load image -> daemon logs say "no accel found" -> manually adding in /lib/firmware/xilinx (and renaming xclbin -> bin) works -> starting program -> stuck at loading xclbin file -> reboot helped?
+- rotate makes weird stuff with approx 16:9 image
 
 ## Ideas
 
-use smartphone gyro sensor with awesome sensor logger -> report via http the devide orientation
+use smartphone gyro sensor with small http server + website -> report via http the device orientation
 stick camera to phone with some rubber band
 
 

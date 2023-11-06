@@ -6,23 +6,6 @@
 #include <string>
 #include <vector>
 
-class TimerSpan {
-	std::chrono::high_resolution_clock::time_point m_start;
-	std::chrono::microseconds& m_stat;
-
-public:
-	TimerSpan(std::chrono::microseconds& stat) :
-			m_stat(stat) {
-		m_start = std::chrono::high_resolution_clock::now();
-	}
-
-	~TimerSpan() {
-		const auto now = std::chrono::high_resolution_clock::now();
-		m_stat = std::chrono::duration_cast<std::chrono::microseconds>(
-				now - m_start);
-	}
-};
-
 class Statistics {
 	std::vector<std::pair<std::string, std::chrono::microseconds>> m_durations { };
 	size_t m_data_size;
@@ -47,12 +30,25 @@ public:
 		m_durations.emplace_back(name, first_duration + second_duration);
 	}
 
-	TimerSpan time_this(std::string name) {
-		using std::chrono::microseconds;
-		m_durations.emplace_back(name, microseconds { });
-		auto& pair = m_durations.back();
-		microseconds& duration = std::get<1>(pair);
-		return TimerSpan(duration);
+	template <typename ResultT, typename FunctionT>
+	ResultT time_this_result(std::string name, FunctionT func) {
+		const auto start = std::chrono::high_resolution_clock::now();
+		const auto result = func();
+		const auto now = std::chrono::high_resolution_clock::now();
+		const auto duration = std::chrono::duration_cast<
+				std::chrono::microseconds>(now - start);
+		m_durations.emplace_back(name, duration);
+		return result;
+	}
+
+	template <typename FunctionT>
+	void time_this(std::string name, FunctionT func) {
+		const auto start = std::chrono::high_resolution_clock::now();
+		func();
+		const auto now = std::chrono::high_resolution_clock::now();
+		const auto duration = std::chrono::duration_cast<
+				std::chrono::microseconds>(now - start);
+		m_durations.emplace_back(name, duration);
 	}
 	friend std::ostream& operator<<(std::ostream& os, const Statistics& stats);
 };

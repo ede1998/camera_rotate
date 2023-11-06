@@ -29,8 +29,8 @@ cv::VideoCapture init_camera() {
 	return cap;
 }
 
-std::tuple<xrt::bo, xrt::bo, xrt::kernel> init_fpga(const std::string& binaryFile,
-		const size_t buffer_size) {
+std::tuple<xrt::bo, xrt::bo, xrt::kernel> init_fpga(
+		const std::string& binaryFile, const size_t buffer_size) {
 	int device_index = 0; //Device index should be 0 on the Kria board
 	auto device = xrt::device(device_index);
 
@@ -80,17 +80,19 @@ int main(int argc, char** argv) {
 	std::cout << "Start grabbing\nPress any key to terminate" << std::endl;
 	cv::Mat frame(kRows, kCols, CV_8UC3);
 	cv::Mat frame_bw(kRows, kCols, CV_8UC1);
-    const cv::Rect cropArea((kCols - kColsCropped) / 2, (kRows - kRowsCropped) / 2, kColsCropped, kRowsCropped);
+	const cv::Rect cropArea((kCols - kColsCropped) / 2,
+			(kRows - kRowsCropped) / 2, kColsCropped, kRowsCropped);
 
 	for (;;) {
 		Statistics stats { image_size };
 
-		{
-			stats.time_this("Capture frame");
-			if (!cap.read(frame)) {
-				std::cerr << "ERROR! blank frame grabbed\n";
-				break;
-			}
+		const auto frame_ok = stats.time_this_result<bool>("Capture frame", [&cap, &frame]() {
+			return cap.read(frame);
+		});
+
+		if (!frame_ok) {
+			std::cerr << "ERROR! blank frame grabbed\n";
+			break;
 		}
 
 		assert(frame.cols == kCols);
@@ -98,32 +100,28 @@ int main(int argc, char** argv) {
 		assert(frame.type() == CV_8UC3);
 		assert(frame.isContinuous());
 
-		{
-			stats.time_this("Convert to BW");
+		stats.time_this("Convert to BW", [&frame, &frame_bw]() {
 			cv::cvtColor(frame, frame_bw, cv::COLOR_BGR2GRAY);
-		}
+		});
 
-		cv::Mat frame_cropped(kRowsCropped, kColsCropped, CV_8UC1);
+		cv::Mat frame_cropped(frame_bw, cropArea);
 
 		assert(frame_cropped.total() * frame_cropped.elemSize() == image_size);
 		src.write(frame_cropped.data);
 
-		{
-			stats.time_this("Transfer to kernel");
+		stats.time_this("Transfer to kernel", [&src]() {
 			src.sync(XCL_BO_SYNC_BO_TO_DEVICE);
-		}
+		});
 
-		{
-			stats.time_this("Kernel execution");
-			auto run = krnl(src, dest, frame_cropped.rows,
-					frame_cropped.cols, 90);
+		stats.time_this("Kernel execution", [&]() {
+			auto run = krnl(src, dest, frame_cropped.rows, frame_cropped.cols,
+					90);
 			run.wait();
-		}
+		});
 
-		{
-			stats.time_this("Transfer from kernel");
+		stats.time_this("Transfer from kernel", [&src]() {
 			src.sync(XCL_BO_SYNC_BO_FROM_DEVICE);
-		}
+		});
 
 		stats.push_sum("Total transfer time", "Transfer from kernel",
 				"Transfer to kernel");
@@ -133,11 +131,17 @@ int main(int argc, char** argv) {
 		const auto rotated_image = cv::Mat(frame_cropped.rows,
 				frame_cropped.cols, frame_cropped.type(), dest.map());
 
+		cv::imshow("Original", frame);
+		cv::waitKey(5000);
+		cv::imshow("Input", frame_cropped);
+		cv::waitKey(5000);
+
 		// show live and wait for a key with timeout long enough to show images
 		cv::imshow("Live", rotated_image);
-		if (cv::waitKey(5) >= 0) {
+		if (cv::waitKey(5000) >= 0) {
 			break;
 		}
+		break;
 	}
 
 	return 0;
