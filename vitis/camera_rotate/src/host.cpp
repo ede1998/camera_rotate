@@ -86,9 +86,10 @@ int main(int argc, char** argv) {
 	for (;;) {
 		Statistics stats { image_size };
 
-		const auto frame_ok = stats.time_this_result<bool>("Capture frame", [&cap, &frame]() {
-			return cap.read(frame);
-		});
+		const auto frame_ok = stats.time_this_result<bool>("Capture frame",
+				[&cap, &frame]() {
+					return cap.read(frame);
+				});
 
 		if (!frame_ok) {
 			std::cerr << "ERROR! blank frame grabbed\n";
@@ -104,7 +105,12 @@ int main(int argc, char** argv) {
 			cv::cvtColor(frame, frame_bw, cv::COLOR_BGR2GRAY);
 		});
 
-		cv::Mat frame_cropped(frame_bw, cropArea);
+		const auto frame_cropped = cv::Mat(frame_bw, cropArea).clone();
+		assert(frame_cropped.rows > 10);
+		assert(frame_cropped.cols > 10);
+		assert(frame_cropped.type() == CV_8UC1);
+		assert(frame_cropped.channels() == 1);
+		assert(frame_cropped.isContinuous());
 
 		assert(frame_cropped.total() * frame_cropped.elemSize() == image_size);
 		src.write(frame_cropped.data);
@@ -131,17 +137,11 @@ int main(int argc, char** argv) {
 		const auto rotated_image = cv::Mat(frame_cropped.rows,
 				frame_cropped.cols, frame_cropped.type(), dest.map());
 
-		cv::imshow("Original", frame);
-		cv::waitKey(5000);
-		cv::imshow("Input", frame_cropped);
-		cv::waitKey(5000);
-
 		// show live and wait for a key with timeout long enough to show images
 		cv::imshow("Live", rotated_image);
-		if (cv::waitKey(5000) >= 0) {
+		if (cv::waitKey(5) >= 0) {
 			break;
 		}
-		break;
 	}
 
 	return 0;
