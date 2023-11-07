@@ -157,7 +157,7 @@
             			
             <storageModule moduleId="cdtBuildSystem" version="4.0.0">
                 				
-                <configuration artifactExtension="" artifactName="${ProjName}" buildArtefactType="com.xilinx.accelerated.buildArtefactType.hostExe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=com.xilinx.accelerated.buildArtefactType.hostExe" cleanCommand="rm -rf" description="" id="com.xilinx.ide.accel.config.hw.aarch64.898827450" name="Hardware" parent="com.xilinx.ide.accel.config.hw.aarch64">
+                <configuration artifactExtension="" artifactName="${ProjName}" buildArtefactType="com.xilinx.accelerated.buildArtefactType.hostExe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=com.xilinx.accelerated.buildArtefactType.hostExe" cleanCommand="rm -rf" description="" id="com.xilinx.ide.accel.config.hw.aarch64.898827450" name="Hardware" parent="com.xilinx.ide.accel.config.hw.aarch64" preannouncebuildStep="Generate header for embedding html file" prebuildStep="xxd -i ../src/webpage.html ../src/webpage.hpp">
                     					
                     <folderInfo id="com.xilinx.ide.accel.config.hw.aarch64.898827450." name="/" resourcePath="">
                         						
@@ -175,7 +175,7 @@
                                 								
                                 <option id="gnu.cpp.compiler.option.dialect.flags.1067259265" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=c++17" valueType="string"/>
                                 								
-                                <option id="com.xilinx.ide.accel.cpp.compiler.include.paths.aarch64.1561708477" superClass="com.xilinx.ide.accel.cpp.compiler.include.paths.aarch64" useByScannerDiscovery="false" valueType="includePath">
+                                <option id="com.xilinx.ide.accel.cpp.compiler.include.paths.aarch64.1561708477" name="Include paths (-I)" superClass="com.xilinx.ide.accel.cpp.compiler.include.paths.aarch64" useByScannerDiscovery="false" valueType="includePath">
                                     									
                                     <listOptionValue builtIn="false" value="${env_var:XILINX_HLS}/include/"/>
                                     									
@@ -196,6 +196,10 @@
                                 <option id="com.xilinx.ide.accel.cpp.linker.option.libs.aarch64.660602647" name="Libraries (-l)" superClass="com.xilinx.ide.accel.cpp.linker.option.libs.aarch64" useByScannerDiscovery="false" valueType="libFiles">
                                     									
                                     <listOptionValue builtIn="false" value="xilinxopencl"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="ssl"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="crypto"/>
                                     									
                                     <listOptionValue builtIn="false" value="xrt_coreutil"/>
                                     									
@@ -240,6 +244,8 @@
             </storageModule>
             			
             <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+            			
+            <storageModule moduleId="ilg.gnuarmeclipse.managedbuild.packs"/>
             		
         </cconfiguration>
         	

@@ -1,5 +1,8 @@
+#include <atomic>
+#include <chrono>
 #include <iostream>
 #include <string>
+#include <thread>
 #include <tuple>
 
 #include <opencv2/core.hpp>
@@ -7,12 +10,47 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/videoio.hpp>
 
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include "httplib.h"
+
+#include "webpage.hpp"
 #include "statistics.hpp"
 
 // XRT includes
 #include "xrt/xrt_bo.h"
 #include "xrt/xrt_device.h"
 #include "xrt/xrt_kernel.h"
+
+int normalize(float rotation) {
+	float zero_to_360 = fmod(rotation + 360.0, 360.0);
+	const auto cardinal_direction = static_cast<int>(std::round(
+			zero_to_360 / 90.0)) * 90;
+	return (cardinal_direction == 360) ? 0 : cardinal_direction;
+}
+
+static std::atomic<float> current_rotation;
+
+void run_rotation_server() {
+	const std::string webpage { reinterpret_cast<char*>(___src_webpage_html),
+			___src_webpage_html_len };
+	httplib::SSLServer svr { "./certificate.pem", "./privatekey.pem" };
+
+	svr.Get("/",
+			[&webpage](const httplib::Request& req, httplib::Response& res) {
+				res.set_content(webpage, "text/html");
+			});
+
+	svr.Get("/rotation",
+			[](const httplib::Request& req, httplib::Response& res) {
+				if (req.has_param("value")) {
+					const auto rotation = std::stof(req.get_param_value("value"));
+					current_rotation = rotation;
+				}
+			});
+
+	std::cout << "Starting up server on https://0.0.0.0:1234" << std::endl;
+	svr.listen("0.0.0.0", 1234);
+}
 
 cv::VideoCapture init_camera() {
 	cv::VideoCapture cap;
@@ -83,6 +121,8 @@ int main(int argc, char** argv) {
 	const cv::Rect cropArea((kCols - kColsCropped) / 2,
 			(kRows - kRowsCropped) / 2, kColsCropped, kRowsCropped);
 
+	std::thread web_server { run_rotation_server };
+
 	for (;;) {
 		Statistics stats { image_size };
 
@@ -119,9 +159,12 @@ int main(int argc, char** argv) {
 			src.sync(XCL_BO_SYNC_BO_TO_DEVICE);
 		});
 
+		const auto rotation = normalize(current_rotation);
+		stats.set_rotation(rotation);
+
 		stats.time_this("Kernel execution", [&]() {
 			auto run = krnl(src, dest, frame_cropped.rows, frame_cropped.cols,
-					90);
+					rotation);
 			run.wait();
 		});
 
@@ -143,6 +186,8 @@ int main(int argc, char** argv) {
 			break;
 		}
 	}
+
+	web_server.join();
 
 	return 0;
 }

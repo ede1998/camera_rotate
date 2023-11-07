@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<script type="application/javascript">
+			let currentRotation = 0.0;
+			function sendRotation() {
+				const currentHost = window.location.host;
+				fetch(`https://${currentHost}/rotation?value=${currentRotation}`, {method:"GET"});
+			}
+			function handleOrientation(event) {
+				const fractionDigits = 2;
+				const alpha = event.alpha.toFixed(fractionDigits);
+				const beta = event.beta.toFixed(fractionDigits);
+				const gamma = event.gamma.toFixed(fractionDigits);
+				const alphaText = document.querySelector("#alpha");
+				const betaText = document.querySelector("#beta");
+				const gammaText = document.querySelector("#gamma");
+
+				alphaText.textContent = alpha;
+				betaText.textContent = beta;
+				gammaText.textContent = gamma;
+
+				currentRotation = beta;
+			}
+
+			window.addEventListener('deviceorientation', handleOrientation);
+			console.log("Registered device orientation callback");
+
+			// avoid issues if sendRotation takes longer than 30 ms
+			(function loop() {
+				setTimeout(() => {
+					sendRotation();
+					loop();
+				}, 30);
+			})();
+
+			console.log("Cyclical sending prepared");
+		</script>
+	</head>
+
+	<body>
+		<p>Alpha: <b><span id="alpha"></span></b></p>
+		<p>Beta:  <b><span id="beta"></span></b></p>
+		<p>Gamma: <b><span id="gamma"></span></b></p>
+	</body>
+</html>
+

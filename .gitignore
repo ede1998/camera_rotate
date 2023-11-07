@@ -11,4 +11,6 @@ vitis/RemoteSystemsTempFiles/
 vitis/ip_cache/
 vitis_hls.log
 xrc.log
-
+extras/certificate.pem
+extras/privatekey.pem
+vitis/camera_rotate/src/webpage.hpp
