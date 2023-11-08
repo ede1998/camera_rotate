@@ -21,11 +21,10 @@
 #include "xrt/xrt_device.h"
 #include "xrt/xrt_kernel.h"
 
-uint16_t
-normalize(float rotation) {
+uint16_t normalize_and_invert(float rotation) {
 	float zero_to_360 = fmod(rotation + 360.0, 360.0);
-	const auto cardinal_direction = static_cast<int>(std::round(
-			zero_to_360 / 90.0)) * 90;
+	const auto cardinal_direction = (360 - static_cast<int>(std::round(
+			zero_to_360 / 90.0)) * 90);
 	return (cardinal_direction == 360) ? 0 : cardinal_direction;
 }
 
@@ -160,7 +159,7 @@ int main(int argc, char** argv) {
 			src.sync(XCL_BO_SYNC_BO_TO_DEVICE);
 		});
 
-		const uint16_t rotation = normalize(current_rotation);
+		const uint16_t rotation = normalize_and_invert(current_rotation);
 		stats.set_rotation(rotation);
 
 		stats.time_this("Kernel execution", [&]() {
