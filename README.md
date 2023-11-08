@@ -40,6 +40,7 @@ Potentially useful:
 - xmutil fails to load image -> daemon logs say "no accel found" -> manually adding in /lib/firmware/xilinx (and renaming xclbin -> bin) works -> starting program -> stuck at loading xclbin file -> reboot helped?
 - rotate makes weird stuff with approx 16:9 image
 - SSL encryption needed for reading orientation sensor acc. to doc -> generate SSL cert and link openssl -> trouble with dynamic linking: [Download](https://ubuntu.pkgs.org/20.04/ubuntu-main-arm64/libssl1.1_1.1.1f-1ubuntu2_arm64.deb.html) correct ARM64 package for kria board
+- rotation only doing almost only 90deg regardless of input -> datatype inconsistency passed via 270 via `uint8_t`, then into integer -> fix didn't help -> looked through source code -> actual input should be 0,1,2 instead of 90,180,270 as documentation word for word says... -> fixed and added copy only branch for 0deg
 
 ## Ideas
 

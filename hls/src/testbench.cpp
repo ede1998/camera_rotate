@@ -9,11 +9,12 @@
 
 #include "krnl_vadd.h"
 
-int main(){
+bool rotation_test(const uint16_t rotation) {
 	const std::string hls_folder = "../../../../";
-
 	const auto in = cv::imread(hls_folder + "test.png", cv::IMREAD_GRAYSCALE);
-	const auto reference = cv::imread(hls_folder + "ref_test.png", cv::IMREAD_GRAYSCALE);
+
+	const auto reference = cv::imread(hls_folder + "ref_test_" + std::to_string(rotation) + ".png", cv::IMREAD_GRAYSCALE);
+	assert(reference.data != nullptr);
 
 	assert(in.channels() == BITS_PER_PIXEL / 8);
 	assert(in.rows > 10);
@@ -26,23 +27,34 @@ int main(){
 	const auto in_data = reinterpret_cast<Pixel*>(in.data);
 	auto out_data = reinterpret_cast<Pixel*>(out_mat.data);
 
-	krnl_vadd(in_data, out_data, in.rows, in.cols, 180);
+	krnl_vadd(in_data, out_data, in.rows, in.cols, rotation);
 
-	cv::imwrite(hls_folder + "output_test.png", out_mat);
 
 	cv::Mat diff;
     // Compute absolute difference image
     cv::absdiff(out_mat, reference, diff);
-    // Save the difference image
-    cv::imwrite(hls_folder + "diff.png", diff);
 
     float err_per;
     xf::cv::analyzeDiff(diff, 0, err_per);
 
     if (err_per > 0.0f) {
-        fprintf(stderr, "ERROR: Test Failed.\n ");
-        return 1;
+        std::cerr << "ERROR: Test Failed for rotation " << rotation << std::endl;
+        cv::imwrite(hls_folder + "output_test.png", out_mat);
+        cv::imwrite(hls_folder + "diff.png", diff);
+
+        return false;
     }
-    std::cout << "Test Passed " << std::endl;
-	return 0;
+    std::cout << "Test Passed for rotation " << rotation << std::endl;
+	return true;
+}
+
+
+int main(){
+	const auto success =
+		rotation_test(0) &&
+	    rotation_test(90) &&
+	    rotation_test(180) &&
+	    rotation_test(270);
+
+	return (success)? 0 : 1;
 }
