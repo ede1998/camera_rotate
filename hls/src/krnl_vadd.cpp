@@ -5,7 +5,7 @@
 static constexpr int __XF_DEPTH = (MAX_PIXELS * (XF_PIXELWIDTH(XF_8UC1, XF_NPPC1)) / 8) / (BITS_PER_PIXEL / 8);
 
 void krnl_vadd(Pixel *src_ptr, Pixel *dst_ptr, uint16_t rows, uint16_t cols,
-		uint8_t direction) {
+		uint16_t direction) {
 // AXI Lite Slave interface
 #pragma HLS INTERFACE mode=s_axilite port=rows
 #pragma HLS INTERFACE mode=s_axilite port=cols

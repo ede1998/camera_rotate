@@ -21,7 +21,8 @@
 #include "xrt/xrt_device.h"
 #include "xrt/xrt_kernel.h"
 
-int normalize(float rotation) {
+uint16_t
+normalize(float rotation) {
 	float zero_to_360 = fmod(rotation + 360.0, 360.0);
 	const auto cardinal_direction = static_cast<int>(std::round(
 			zero_to_360 / 90.0)) * 90;
@@ -159,7 +160,7 @@ int main(int argc, char** argv) {
 			src.sync(XCL_BO_SYNC_BO_TO_DEVICE);
 		});
 
-		const auto rotation = normalize(current_rotation);
+		const uint16_t rotation = normalize(current_rotation);
 		stats.set_rotation(rotation);
 
 		stats.time_this("Kernel execution", [&]() {
