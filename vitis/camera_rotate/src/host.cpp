@@ -154,13 +154,20 @@ int main(int argc, char** argv) {
 		assert(frame_cropped.isContinuous());
 
 		assert(frame_cropped.total() * frame_cropped.elemSize() == image_size);
-		src.write(frame_cropped.data);
 
+		// show live and wait for a key with timeout long enough to show images
+				cv::imshow("Orignal", frame_cropped);
+				if (cv::waitKey(5) >= 0) {
+					break;
+				}
+
+		for (const auto rotation: {0,90,180,270}) {
+		Statistics stats { image_size };
+		src.write(frame_cropped.data);
 		stats.time_this("Transfer to kernel", [&src]() {
 			src.sync(XCL_BO_SYNC_BO_TO_DEVICE);
 		});
 
-		const uint16_t rotation = normalize(current_rotation);
 		stats.set_rotation(rotation);
 
 		stats.time_this("Kernel execution", [&]() {
@@ -182,10 +189,12 @@ int main(int argc, char** argv) {
 				frame_cropped.cols, frame_cropped.type(), dest.map());
 
 		// show live and wait for a key with timeout long enough to show images
-		cv::imshow("Live", rotated_image);
-		if (cv::waitKey(5) >= 0) {
+		cv::imshow(std::to_string(rotation), rotated_image);
+		if (cv::waitKey(10000) >= 0) {
 			break;
 		}
+	}
+		break;
 	}
 
 	web_server.join();
