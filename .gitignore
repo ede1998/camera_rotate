@@ -14,3 +14,5 @@ xrc.log
 extras/certificate.pem
 extras/privatekey.pem
 vitis/camera_rotate/src/webpage.hpp
+
+*.pdfpc
