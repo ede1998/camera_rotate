@@ -54,6 +54,7 @@
 #let project(
   title: "",
   abstract: [],
+  lecture: "",
   authors: (),
   logo: none,
   body
@@ -71,6 +72,12 @@
     #text(2em, weight: 700, title)
   ]
 
+  if lecture != "" {
+    align(center)[
+        #emph([Vorlesung: #lecture])
+    ]
+  }
+
   // Author information.
   pad(
     top: 0.7em,
@@ -81,8 +88,8 @@
         *#author.name* \
         #author.email \
         #author.affiliation \
-        #author.postal \
-        #author.phone
+        #author.at("postal", default: "") \
+        #author.at("phone", default: "")
       ]),
     ),
   )

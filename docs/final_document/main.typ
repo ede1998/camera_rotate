@@ -1,53 +1,44 @@
 #import "template.typ": project
 
 #show: project.with(
-  title: "The Magical Green Bean 😎",
+  title: "camera_rotate\n(Laborprojekt)",
+  lecture: "Labor Rechnersysteme",
   logo: "resources/demo_still.png",
   authors: (
-    (name: "Jacopo Zagoli", 
-    email: "jacopo@zagoli.com", 
-    affiliation: "University of Studies", 
-    postal: "Via dei gigli, 18/b", 
-    phone: "3402203300"),
+    (
+      name: "Erik Alexander Hennig",
+      email: "tae@erik-hennig.me", 
+      affiliation: "Technische Akademie Esslingen", 
+    ),
   ),
 )
 
-= Introduction
+= Aufgabenstellung
 #lorem(60)
 
-== In this paper
+== Implementierung
 #lorem(20)
 
-=== Contributions
+=== Architektur
 #lorem(40)
 #parbreak()
 #lorem(30)
 
-== Related Work
+=== Parameter-Variation
+
+=== Probleme
+
+== Performance
+
 #lorem(500)
 #lorem(500)
 
-== More related work
+== Fazit
 #lorem(100)
 #figure(
   image("resources/demo_still.png", width: 70%),
   caption: "Serious Business."
 )
-
-= A New Life
-#lorem(700)
-
-= A New World
-#lorem(20)
-#parbreak()
-#lorem(500)
-
-== Check out the Headers
-#lorem(150)
-#lorem(150)
-
-=== Do you like them?
-#lorem(300)
 
 // Bibliography section
 #pagebreak(weak: true)
