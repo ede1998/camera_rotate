@@ -30,7 +30,7 @@
 #slide(title: "Architecture")[
 	// #stack(dir: ltr, [== Architecture],align(left, image("architecture.png")))
 	#set align(center)
-	#image("architecture.png")
+	#image("resources/architecture.png")
 	#pdfpc.speaker-note(
     ```md
 		- Programm auf Kria Prozessor
@@ -63,7 +63,7 @@
 
 #slide(title: "Demo")[
 	#set align(center)
-	#link("https://cloud.erik-hennig.me/f/2486685", image("demo_still.png", height:87%))
+	#link("./resources/demo.mp4", image("resources/demo_still.png", height:87%))
 	#pdfpc.speaker-note(
     ```md
 		- Website noch nicht geladen, Applikation noch nicht gestartet
