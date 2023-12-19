@@ -20,10 +20,10 @@ des Kria KV260 Vision AI Starter Kits sowie die Nutzung der Xilinx Toolchain fü
 offen. In diesem Fall wurde als selbstgestellte Aufgabe gewählt, ein aufgenommenes Kamera-Bild unter Zuhilfenahme eines Orientierungssensors so
 zu rotieren, dass es immer aufrecht angezeigt wird. Dabei soll die Rotation performant genug sein, um ein flüssiges Live-Bild anzuzeigen.
 
-== Implementierung
+= Implementierung
 
 Um das Performance-Ziel zu erreichen, soll die Rotation des aufgenommenen Bilds in Hardware implementiert werden. Die übrige Logik wird nur in
-Software implementiert. #ref(<img:arch>) zeigt die architekturelle Umsetzung des Projekts. Der Mikrocontroller-Baustein in der Mitte stellt den
+Software implementiert. @img:arch zeigt die architekturelle Umsetzung des Projekts. Der Mikrocontroller-Baustein in der Mitte stellt den
 nicht-programmierbaren Teil des Kria-Boards dar. Dieser kommuniziert mit dem FPGA-Teil via AXI und AXI-Lite. Die Aufnahme des (verdrehten)
 Live-Bilds erfolgt mit einer per USB angeschlossenen Webcam. Zur Bestimmung der Kameraorientierung wird ein modernes Smartphone genutzt. Solche
 Geräte verfügen in der Regel alle über einen Orientierungsensor und sind leicht zu integrieren, da sie über zahlreiche Wege kommunizieren können.
@@ -38,25 +38,37 @@ auf einem externen Display oder per SSH mittels X11 Display Forwarding auf einem
   caption: "Kommunikationskanäle"
 ) <img:arch>
 
+Zur Umsetzung der Rotation in Hardware kommen folgende Funktionen der Vitis Vision Library auf den ersten Blick in Betracht:
+
+- `remap` @vision-remap: vertauscht Pixel anhand einer Relokationsmatrix
+- `warpTransform` @vision-wtf: wendet eine affine Transformation auf das Eingangsbild an
+- `rotate` @vision-rotate: rotiert das Eingangsbild um 90, 180 oder 270 Grad
+
+Die ersten beiden Funktionen erlauben eine beliebige Rotationen. Allerdings sind sie nicht ganz so trivial zu verwenden wie `rotate`, das explizit
+nur für die Rotation implementiert wurde. Aus diesem Grund wurde `rotate` für die erste Implementierung genutzt und dann aus Zeitgründen auch nicht
+mehr ersetzt.
 
 - Welcher Teil genau in Hardware?
 - Welche HW-Funktion kommt in Betracht?
 - Implementierung der Hw-Funktion
 
-=== Parameter-Variation
+== Parameter-Variation
 
-=== Probleme
+== Probleme
 
-== Performance
+= Performance
 
-== Fazit
+= Fazit
 
 - viel gelernt
 - Doku könnte besser sein
 - persönlich: hat Spaß gemacht
 - performance? measure first? oder HW ist schnell
 
+Die vollständige Implementierung des Projekts findet sich unter https://github.com/ede1998/camera_rotate @project-impl.
+
 #pagebreak(weak: true)
 #set page(header: [])
 = Bibliographie
-#lorem(30)
+
+#bibliography("bibliography.bib", title: none)
