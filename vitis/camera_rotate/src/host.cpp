@@ -67,30 +67,6 @@ cv::VideoCapture init_camera() {
 	return cap;
 }
 
-std::tuple<xrt::bo, xrt::bo, xrt::kernel> init_fpga(
-		const std::string& binaryFile, const size_t buffer_size) {
-	int device_index = 0; //Device index should be 0 on the Kria board
-	auto device = xrt::device(device_index);
-
-	std::cout << "Load the xclbin: " << binaryFile << std::endl;
-	const auto uuid = device.load_xclbin(binaryFile);
-	std::cout << "Device name: " << device.get_info<xrt::info::device::name>()
-			<< std::endl;
-	auto krnl = xrt::kernel(device, uuid, "krnl_vadd");
-
-	// Allocate buffers for the kernel arguments with master interfaces in the
-	// same memory bank as the kernel interfaces group id.
-	// The group_id is the argument index of the HLS function.
-	// The kernel has the following arguments (see HLS):
-	// void krnl_vadd(Pixel *src_ptr, Pixel *dst_ptr, uint16_t rows, uint16_t cols,	uint8_t direction);
-	// src_ptr and dest_ptr are master interfaces with memory buffers to be allocated.
-	// Others are registers in the kernel (slave interface) and needs no buffer.
-	auto src = xrt::bo(device, buffer_size, krnl.group_id(0));
-	auto dest = xrt::bo(device, buffer_size, krnl.group_id(1));
-
-	return std::make_tuple(src, dest, krnl);
-}
-
 int main(int argc, char** argv) {
 	if (argc < 2) {
 		std::cerr << "usage: camera_rotate <xclbin-file>\n";
@@ -109,11 +85,6 @@ int main(int argc, char** argv) {
 	constexpr size_t kRowsCropped = 512;
 	constexpr size_t kColsCropped = 512;
 	const auto image_size = kColsCropped * kRowsCropped * 1;
-
-	auto tuple = init_fpga(argv[1], image_size);
-	auto src = std::get<0>(tuple);
-	auto dest = std::get<1>(tuple);
-	auto krnl = std::get<2>(tuple);
 
 	std::cout << "Start grabbing\nPress any key to terminate" << std::endl;
 	cv::Mat frame(kRows, kCols, CV_8UC3);
@@ -153,32 +124,32 @@ int main(int argc, char** argv) {
 		assert(frame_cropped.isContinuous());
 
 		assert(frame_cropped.total() * frame_cropped.elemSize() == image_size);
-		src.write(frame_cropped.data);
 
-		stats.time_this("Transfer to kernel", [&src]() {
-			src.sync(XCL_BO_SYNC_BO_TO_DEVICE);
-		});
 
 		const uint16_t rotation = normalize_and_invert(current_rotation);
 		stats.set_rotation(rotation);
 
-		stats.time_this("Kernel execution", [&]() {
-			auto run = krnl(src, dest, frame_cropped.rows, frame_cropped.cols,
-					rotation);
-			run.wait();
-		});
+		auto rotated_image = cv::Mat(frame_cropped.rows,
+				frame_cropped.cols, frame_cropped.type());
 
-		stats.time_this("Transfer from kernel", [&src]() {
-			src.sync(XCL_BO_SYNC_BO_FROM_DEVICE);
+		stats.time_this("Rotation", [&]() {
+			switch (rotation) {
+			case 0:
+				rotated_image = frame_cropped;
+				break;
+			case 90:
+				cv::rotate(frame_cropped, rotated_image, cv::ROTATE_90_CLOCKWISE);
+				break;
+			case 180:
+				cv::rotate(frame_cropped, rotated_image, cv::ROTATE_180);
+				break;
+			case 270:
+				cv::rotate(frame_cropped, rotated_image, cv::ROTATE_90_COUNTERCLOCKWISE);
+				break;
+			}
 		});
-
-		stats.push_sum("Total transfer time", "Transfer from kernel",
-				"Transfer to kernel");
 
 		std::cout << stats << std::endl;
-
-		const auto rotated_image = cv::Mat(frame_cropped.rows,
-				frame_cropped.cols, frame_cropped.type(), dest.map());
 
 		// show live and wait for a key with timeout long enough to show images
 		cv::imshow("Live", rotated_image);
