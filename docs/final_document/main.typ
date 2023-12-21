@@ -35,7 +35,7 @@ auf einem externen Display oder per SSH mittels X11 Display Forwarding auf einem
 
 #figure(
   image("resources/architecture.png"),
-  caption: "Kommunikationskanäle"
+  caption: [Kommunikationskanäle],
 ) <img:arch>
 
 Zur Umsetzung der Rotation in Hardware kommen folgende Funktionen der Vitis Vision Library auf den ersten Blick in Betracht:
@@ -50,9 +50,12 @@ mehr ersetzt.
 
 == Parameter
 
+In diesem Abschnitt werden auf die Template-Parameter der genutzten Funktion `xf::cv::rotate` der Vitis Vision Library eingegangen sowie die 
+genutzten Pragmas für die Code-Generierung der High-Level-Synthese beschrieben.
+
 === Pragmas
 
-Die Argument für `rotate` wurden größtenteils einfach durchgereicht. Dabei wurde die Übergabe kleiner Argumente per AXI-Lite umgesetzt. Dies
+Die Argumente für `rotate` wurden größtenteils einfach durchgereicht. Dabei wurde die Übergabe kleiner Argumente per AXI-Lite umgesetzt. Dies
 betrifft die tatsächliche Breite und Höhe des Bilds, den Rotationswinkel und die Steuerung des IP-Blocks. Die Übertagung der Eingabe- und
 Ausgabe-Bilddaten erfolgt über einen AXI-Bus. Dabei wurden folgende Parameter gewählt:
 
@@ -88,7 +91,7 @@ Bei einer Eingabe-/Ausgabebreite von 8 Bit ergibt sich ein Assertionfehler und 2
 
 Diese Template-Parameter geben die Maximalbreite und -höhe des zu drehenden Bildes in Pixel an. Diese sind in einem gewissen Rahmen frei-wählbar,
 allerdings muss bei nicht-quadratischen Bildern darauf geachtet werden, die Maße des Ausgabebildes abhängig von der Rotation anzupassen.
-Andernfalls werden die Pixel durch fehlerhaft Interpretation der Pixelposition an der falschen Stelle dargestellt wie in @img:rect-image zu sehen.
+Andernfalls werden die Pixel durch fehlerhafte Interpretation der Pixelposition an der falschen Stelle dargestellt wie in @img:rect-image zu sehen.
 
 #figure(
   columns(3)[
@@ -98,20 +101,35 @@ Andernfalls werden die Pixel durch fehlerhaft Interpretation der Pixelposition a
     #colbreak()
     #image("resources/rect-image-err.png")
   ],
-  caption: "Rotation eines nicht-quadratischen Bildes"
+  caption: [Rotation eines nicht-quadratischen Bildes],
 ) <img:rect-image>
 
-Geringe max size
+Wird `COLS` und `ROWS` zu groß gewählt, kommt es zu einer Segmentierungsverletzung in der Co-Simulation, obwohl die C-Simulation weiterhin
+erfolgreich durchgeführt werden kann. Die Gründe hierfür sind leider unklar, aber mittels binärer Suche (`hls/bin_search.py`) konnte für
+quadratische Bilder die Maximalhöhe/-breite von *XXX*>=515 Pixeln ermittelt werden.
 
-300x200
+Überraschenderweise ist der Ressourcenverbrauch von `rotate` unabhängig von der Maximalgröße des Bildes. @tab:resources zeigt dies beispielhaft
+für zwei Größen. Dies zeigt, dass es keinen Buffer für das gesamte Bild gibt, obwohl eine Rotation die Pixel nicht lokal begrenzt bewegt, sondern
+über die komplette Fläche verschiebt, z.B. findet sich das Pixel oben links nach einer Rotation um 180 Grad unten rechts wieder. Der Grund dafür
+liegt laut Dokumentation darin, dass `rotate` und einige andere Funktionen mittels Memory-Mapping implementiert sind @vitis-mem-map, sodass sie
+direkt auf den RAM des festverdrahteten Prozessors zugreifen müssten.
 
-All the functions in the library are implemented in streaming model except 4. Crop, EdgeTracing, MeanShiftTracking, Rotate are memory mapped implemenations. These functions need to have the flag `__SDA_MEM_MAP__` set for compiling correctly
-https://xilinx.github.io/Vitis_Libraries/vision/2022.1/api-reference.html#id99
+#figure(
+  table(columns: 6,
+    [Seitenlänge], [BRAM],   [DSP],     [FF],        [LUT],         [URAM],
+    [512x512px],   [4(=1%)], [10(=0%)], [7303(=3%)], [12513(=10%)], [0],
+    [300x200px],   [4(=1%)], [10(=0%)], [7303(=3%)], [12513(=10%)], [0],
+    ),
+  caption: [Ressourcenverbrauch bei Variation der maximalen Bildgröße (`NPC=1,TILE_SIZE=32`)],
+) <tab:resources>
 
+// All the functions in the library are implemented in streaming model except 4. Crop, EdgeTracing, MeanShiftTracking, Rotate are memory mapped implemenations. These functions need to have the flag `__SDA_MEM_MAP__` set for compiling correctly
 
 === `NPC` und `TILE_SIZE`
 
 == Probleme
+
+Der folgende Abschnitt beschreibt kurz aufgetretene Probleme bei der Implementierung der High-Level-Synthese-Funktionalität des Projekts.
 
 === Rotation um 0 Grad
 
