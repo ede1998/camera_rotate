@@ -106,7 +106,7 @@ Andernfalls werden die Pixel durch fehlerhafte Interpretation der Pixelposition 
 
 Wird `COLS` und `ROWS` zu groß gewählt, kommt es zu einer Segmentierungsverletzung in der Co-Simulation, obwohl die C-Simulation weiterhin
 erfolgreich durchgeführt werden kann. Die Gründe hierfür sind leider unklar, aber mittels binärer Suche (`hls/bin_search.py`) konnte für
-quadratische Bilder die Maximalhöhe/-breite von *XXX*>=515 Pixeln ermittelt werden.
+quadratische Bilder die Maximalhöhe/-breite von 515 Pixeln ermittelt werden.
 
 Überraschenderweise ist der Ressourcenverbrauch von `rotate` unabhängig von der Maximalgröße des Bildes. @tab:resources zeigt dies beispielhaft
 für zwei Größen. Dies zeigt, dass es keinen Buffer für das gesamte Bild gibt, obwohl eine Rotation die Pixel nicht lokal begrenzt bewegt, sondern
@@ -127,13 +127,13 @@ direkt auf den RAM des festverdrahteten Prozessors zugreifen müssten.
 
 === `NPC` und `TILE_SIZE`
 
+Tile size 64 geht auch
+*TODO* 
 == Probleme
 
 Der folgende Abschnitt beschreibt kurz aufgetretene Probleme bei der Implementierung der High-Level-Synthese-Funktionalität des Projekts.
 
-=== Rotation um 0 Grad
-
-=== Dokumentation
+=== Dokumentation <sec:doc>
 
 Die Dokumentation der Vitis Vision Library hat an einigen Stellen zu Problemen geführt. Beispielsweise beschreibt sie, welcher Header für welche
 Funktion zu inkludieren ist, separat und für manche Funktionen, wie z.B. die genutzte `xf::cv::rotate`, fehlt ein Eintrag @vitis-headers. Somit
@@ -160,13 +160,40 @@ for (int k = 0; k < NPC; k++) {
 Somit sind die korrekten Parameter-Werte nicht 90, 180 und 270, sondern 2, 1 und 0, was der Dokumentation widerspricht. Mit diesen neuen Werte
 funktioniert die Rotation in eine beliebige der drei möglichen Richtungen.
 
+=== Fehlermeldungen
+
+Eine weitere Herausforderungg sind die Fehlermeldungen. Wenn beispielsweise die `INPUT_PTR_WIDTH` keine 2er-Potenz ergibt, so wie in der 
+Dokumentation vorgeschrieben, dann werden bei der C-Simulation viele Warnungen ausgegeben, dass Streams keine Daten enthalten, und es kommt
+schließlich zum Laufzeitfehler. Gerade als Anfänger in der Welt der High-Level-Synthese sind die Warnungen nicht sonderlich verständlich und es ist
+beinahe unmöglich aufgrund dieser den Fehler im Template-Parameter zu finden. Ein weiteres Beispiel für die nicht hilfreiche Fehlermeldungen ist
+auch der Segmentierungsfehler, wenn die Maximalgröße zu groß gewählt wird. Die Fehlermeldung empfiehlt, den Fehler in der Co-Simulation nochmals
+in der C-Simulation zu beobachten, allerdings tritt er dort nicht auf.
+
+=== Rotation um 0 Grad
+
+Die `rotate` Funktion unterstützt lediglich Rotationen um 90, 180 und 270 Grad. Es ist nicht möglich, keine Rotation durchzuführen, wie aus dem
+Codeausschnitt in @sec:doc ersichtlich wird. Um die Eingabe-Bilddaten trotzdem in den Puffer für die Ausgabe-Bilddaten zu übertragen, werden im
+Fall, dass keine Rotation erwünscht ist, die Daten einfach per `for`-Schleife kopiert:
+
+```cpp
+if (rotation == None) {
+	for (uint32_t i = 0; i < rows * cols; ++i) {
+		dst_ptr[i] = src_ptr[i];
+	}
+} else {
+	xf::cv::rotate</* ... */>(src_ptr, dst_ptr, rows, cols, rotation);
+}
+```
+
 = Performance
+
+*TODO*
 
 = Fazit
 
-- viel gelernt
-- Doku könnte besser sein
-- persönlich: hat Spaß gemacht
+Zusammenfassend lässt sich sagen, dass die praktische Umsetzung eines High-Level-Synthese-Projekts sehr lehrreich war. Schwierig gestaltet sich vor allem, dass die Dokumentation teilweise unvollständig oder fehlerhaft ist sowie dass die Fehlermeldungen von Xilinx nichts immer hilfreich
+sind. Von der Performance-Seite her hat sich gezeigt, dass .
+*TODO*
 - performance? measure first? oder HW ist schnell
 
 Die vollständige Implementierung des Projekts findet sich unter https://github.com/ede1998/camera_rotate @project-impl.
