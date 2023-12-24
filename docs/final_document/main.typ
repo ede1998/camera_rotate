@@ -57,7 +57,8 @@ genutzten Pragmas für die Code-Generierung der High-Level-Synthese beschrieben.
 
 Die Argumente für `rotate` wurden größtenteils einfach durchgereicht. Dabei wurde die Übergabe kleiner Argumente per AXI-Lite umgesetzt. Dies
 betrifft die tatsächliche Breite und Höhe des Bilds, den Rotationswinkel und die Steuerung des IP-Blocks. Die Übertagung der Eingabe- und
-Ausgabe-Bilddaten erfolgt über einen AXI-Bus. Dabei wurden folgende Parameter gewählt:
+Ausgabe-Bilddaten erfolgt über einen AXI-Bus#footnote[Wie in @sec:cols-rows beschrieben, erfolgt der Bildzugriff per Memory Mapping. Somit scheinen
+nur die Zeiger übertragen zu werden. Aus Zeitgründen war eine tiefere Analyse nicht mehr möglich.]. Dabei wurden folgende Parameter gewählt:
 
 - `offset=slave`: Die Vitis-Dokumentation schreibt diesen Wert vor @vitis-axi-offset-mode
 - `depth=__XF_DEPTH`: Repräsentiert die Größe des Adressbereichs @vitis-axi-offset-mode, also die maximale Größe des Bilds in Bytes
@@ -87,7 +88,7 @@ korrekt ausgeführt, aber andere Kombinationen führen bereits in der C-Simulati
 Bei einer Eingabe-/Ausgabebreite von 8 Bit ergibt sich ein Assertionfehler und 24 Bit sind bereits laut Dokumentation untersagt, da nur
 2er-Potenzen erlaubt sind.
 
-=== `COLS` und `ROWS`
+=== `COLS` und `ROWS` <sec:cols-rows>
 
 Diese Template-Parameter geben die Maximalbreite und -höhe des zu drehenden Bildes in Pixel an. Diese sind in einem gewissen Rahmen frei-wählbar,
 allerdings muss bei nicht-quadratischen Bildern darauf geachtet werden, die Maße des Ausgabebildes abhängig von der Rotation anzupassen.
