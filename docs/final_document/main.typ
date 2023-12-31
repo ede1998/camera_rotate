@@ -128,8 +128,31 @@ direkt auf den RAM des festverdrahteten Prozessors zugreifen müssten.
 
 === `NPC` und `TILE_SIZE`
 
-Tile size 64 geht auch
-*TODO* 
+Die Parameter `NPC` und `TILE_SIZE` kontrollieren den Ablauf des Algorithmus. `NPC` bestimmt dabei die Anzahl an Pixel, die pro Zyklus abgearbeitet
+werden. Erlaubte Werte nach Dokumentation sind eins oder zwei, allerdings schlägt eine Assertion in der C-Simulation fehl, wenn der Wert zwei
+genutzt wird: `ERROR: Hi(15)out of bound(8) in range()`. Aus Zeitgründen konnte dieses Phänomen nicht näher untersucht werden. Das Problem tritt
+jedoch auf, obwohl die in der Dokumentation aufgelistete Vorbedingung, dass `ROW` und `COL` Vielfache von `NPC` sein müssen, erfüllt ist.
+`TILE_SIZE` beschreibt, wie viele Pixel als Gruppe verarbeitet werden sollen. Dieser Parameter kann problemlos variiert werden, um einen passenden
+Trade-Off zwischen Ressourcen-Verbrauch und Performance zu finden. @img:latency-over-tile-size zeigt, dass zwar die minimale Latenz unabhängig von
+der `TILE_SIZE` ist, aber ihr Durchschnitt und Maximum sehr wohl davon beeinflusst werden. Neben den abgebildeten Messungen wurde auch die Latenz 
+für eine `TILE_SIZE` von 2 ermittelt. Diese ist jedoch um ein Vielfaches schlechter als der Rest, weshalb sie hier nicht dargestellt ist, um die
+Skala lesbar zu halten. Das Initiation-Interval unterscheidet sich nur geringfügig von der Latenz und wird deshalb ebenfalls nicht dargestellt.
+
+#figure(
+  image("resources/tile-size/latency.png"),
+  caption: [Latenz in Abhängigkeit vom Parameter `TILE_SIZE`],
+) <img:latency-over-tile-size>
+
+Das performance-technische Optimum scheint sich bei einer `TILE_SIZE` von circa 128 zu finden. @img:resources-over-tile-size stellt den
+Ressourcenverbrauch dagegen. Es zeigt sich, dass dieser weitgehendst unabhängig von der `TILE_SIZE` ist. Einzig die benötigten Block-RAMs 
+korrelieren mit ihr. Eine `TILE_SIZE` von 1024 ist nicht möglich, hier mehr als das siebenfache der verfügbaren RAMs benötigt würden. Allerdings
+werden bei 128 nur 11% der Block-RAMs genutzt. Insofern scheint dieser Wert tatsächlich eine Art Optimum für diese Implementierung darzustellen.
+
+#figure(
+  image("resources/tile-size/resources.png"),
+  caption: [Ressourcenverbrauch in Abhängigkeit vom Parameter `TILE_SIZE`],
+) <img:resources-over-tile-size>
+
 == Probleme
 
 Der folgende Abschnitt beschreibt kurz aufgetretene Probleme bei der Implementierung der High-Level-Synthese-Funktionalität des Projekts.
@@ -195,7 +218,7 @@ if (rotation == None) {
 Zusammenfassend lässt sich sagen, dass die praktische Umsetzung eines High-Level-Synthese-Projekts sehr lehrreich war. Schwierig gestaltet sich vor allem, dass die Dokumentation teilweise unvollständig oder fehlerhaft ist sowie dass die Fehlermeldungen von Xilinx nichts immer hilfreich
 sind. Von der Performance-Seite her hat sich gezeigt, dass .
 *TODO*
-- performance? measure first? oder HW ist schnell
+- performance? measure first? premature opt = root of evil
 
 Die vollständige Implementierung des Projekts findet sich unter https://github.com/ede1998/camera_rotate @project-impl.
 

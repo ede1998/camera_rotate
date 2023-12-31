@@ -25,7 +25,7 @@ ax.bar(bar_positions3, max_lat_values, width=bar_width, label='Maximum')
 ax.set_xticks(bar_positions2)
 ax.set_xticklabels(tile_sizes)
 ax.set_xlabel('Tile Size')
-ax.set_ylabel('Latenz')
+ax.set_ylabel('Latenz (Taktzyklen)')
 ax.legend()
 
 # plt.title('Metrics by Tile Size')
