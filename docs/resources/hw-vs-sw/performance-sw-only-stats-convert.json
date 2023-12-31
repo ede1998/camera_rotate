@@ -1,0 +1,30 @@
+[
+  {
+    "Rotation": "0",
+    "MinTime": 3540,
+    "MaxTime": 17400,
+    "MedianTime": 4545.5,
+    "AverageTime": 4749.214592274678
+  },
+  {
+    "Rotation": "180",
+    "MinTime": 3683,
+    "MaxTime": 8479,
+    "MedianTime": 4546,
+    "AverageTime": 4657.582560296846
+  },
+  {
+    "Rotation": "270",
+    "MinTime": 3747,
+    "MaxTime": 15969,
+    "MedianTime": 4547,
+    "AverageTime": 4819.038934426229
+  },
+  {
+    "Rotation": "90",
+    "MinTime": 3292,
+    "MaxTime": 16061,
+    "MedianTime": 4537,
+    "AverageTime": 4691.481092436975
+  }
+]
