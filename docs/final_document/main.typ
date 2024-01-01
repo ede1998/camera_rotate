@@ -7,8 +7,8 @@
   authors: (
     (
       name: "Erik Alexander Hennig",
-      email: "tae@erik-hennig.me", 
-      affiliation: "Technische Akademie Esslingen", 
+      email: "tae@erik-hennig.me",
+      affiliation: "Technische Akademie Esslingen",
     ),
   ),
 )
@@ -50,7 +50,7 @@ mehr ersetzt.
 
 == Parameter
 
-In diesem Abschnitt werden auf die Template-Parameter der genutzten Funktion `xf::cv::rotate` der Vitis Vision Library eingegangen sowie die 
+In diesem Abschnitt werden auf die Template-Parameter der genutzten Funktion `xf::cv::rotate` der Vitis Vision Library eingegangen sowie die
 genutzten Pragmas für die Code-Generierung der High-Level-Synthese beschrieben.
 
 === Pragmas
@@ -64,7 +64,7 @@ nur die Zeiger übertragen zu werden. Aus Zeitgründen war eine tiefere Analyse 
 - `depth=__XF_DEPTH`: Repräsentiert die Größe des Adressbereichs @vitis-axi-offset-mode, also die maximale Größe des Bilds in Bytes
   ($= "Höhe" * "Breite" * "Kanäle" * "Kanalbreite" = 512 * 512 * 1 * 1 = 262144$)
 - `bundle=gmem0`/`bundle=gmem1`: Eingabe- und Ausgabebild werden über getrennte Bundles übertragen, um Performance-Einbüßen zu vermeiden
-  @vitis-axi-bundle. 
+  @vitis-axi-bundle.
 
 Die Auflistung der `INTERFACE`-Pragmas sieht somit folgendermaßen aus:
 
@@ -133,10 +133,11 @@ werden. Erlaubte Werte nach Dokumentation sind eins oder zwei, allerdings schlä
 genutzt wird: `ERROR: Hi(15)out of bound(8) in range()`. Aus Zeitgründen konnte dieses Phänomen nicht näher untersucht werden. Das Problem tritt
 jedoch auf, obwohl die in der Dokumentation aufgelistete Vorbedingung, dass `ROW` und `COL` Vielfache von `NPC` sein müssen, erfüllt ist.
 `TILE_SIZE` beschreibt, wie viele Pixel als Gruppe verarbeitet werden sollen. Dieser Parameter kann problemlos variiert werden, um einen passenden
-Trade-Off zwischen Ressourcen-Verbrauch und Performance zu finden. @img:latency-over-tile-size zeigt, dass zwar die minimale Latenz unabhängig von
-der `TILE_SIZE` ist, aber ihr Durchschnitt und Maximum sehr wohl davon beeinflusst werden. Neben den abgebildeten Messungen wurde auch die Latenz 
-für eine `TILE_SIZE` von 2 ermittelt. Diese ist jedoch um ein Vielfaches schlechter als der Rest, weshalb sie hier nicht dargestellt ist, um die
-Skala lesbar zu halten. Das Initiation-Interval unterscheidet sich nur geringfügig von der Latenz und wird deshalb ebenfalls nicht dargestellt.
+Trade-Off zwischen Ressourcen-Verbrauch und Performance zu finden. @img:latency-over-tile-size zeigt, dass die minimale Latenz unabhängig von der
+`TILE_SIZE` ist, da diese sich im Zweig "keine Rotation" befindet und dort nur ohne Nutzung des Parameters kopiert wird. Jedoch wird der
+Latenz-Durchschnitt und das Maximum wird davon beeinflusst werden. Neben den abgebildeten Messungen wurde auch die Latenz für eine `TILE_SIZE` von
+2 ermittelt. Diese ist jedoch um ein Vielfaches schlechter als der Rest, weshalb sie hier nicht dargestellt ist, um die Skala lesbar zu halten.
+Das Initiation-Interval unterscheidet sich nur geringfügig von der Latenz und wird deshalb ebenfalls nicht dargestellt.
 
 #figure(
   image("resources/tile-size/latency.png"),
@@ -144,7 +145,7 @@ Skala lesbar zu halten. Das Initiation-Interval unterscheidet sich nur geringfü
 ) <img:latency-over-tile-size>
 
 Das performance-technische Optimum scheint sich bei einer `TILE_SIZE` von circa 128 zu finden. @img:resources-over-tile-size stellt den
-Ressourcenverbrauch dagegen. Es zeigt sich, dass dieser weitgehendst unabhängig von der `TILE_SIZE` ist. Einzig die benötigten Block-RAMs 
+Ressourcenverbrauch dagegen. Es zeigt sich, dass dieser weitgehendst unabhängig von der `TILE_SIZE` ist. Einzig die benötigten Block-RAMs
 korrelieren mit ihr. Eine `TILE_SIZE` von 1024 ist nicht möglich, hier mehr als das siebenfache der verfügbaren RAMs benötigt würden. Allerdings
 werden bei 128 nur 11% der Block-RAMs genutzt. Insofern scheint dieser Wert tatsächlich eine Art Optimum für diese Implementierung darzustellen.
 
@@ -186,7 +187,7 @@ funktioniert die Rotation in eine beliebige der drei möglichen Richtungen.
 
 === Fehlermeldungen
 
-Eine weitere Herausforderungg sind die Fehlermeldungen. Wenn beispielsweise die `INPUT_PTR_WIDTH` keine 2er-Potenz ergibt, so wie in der 
+Eine weitere Herausforderungg sind die Fehlermeldungen. Wenn beispielsweise die `INPUT_PTR_WIDTH` keine 2er-Potenz ergibt, so wie in der
 Dokumentation vorgeschrieben, dann werden bei der C-Simulation viele Warnungen ausgegeben, dass Streams keine Daten enthalten, und es kommt
 schließlich zum Laufzeitfehler. Gerade als Anfänger in der Welt der High-Level-Synthese sind die Warnungen nicht sonderlich verständlich und es ist
 beinahe unmöglich aufgrund dieser den Fehler im Template-Parameter zu finden. Ein weiteres Beispiel für die nicht hilfreiche Fehlermeldungen ist
@@ -211,14 +212,32 @@ if (rotation == None) {
 
 = Performance
 
-*TODO*
+Dieser Abschnitt vergleicht die Implementierung der Rotation in Hardware mit einer rein software-basierten Implementierung. Statt `xf::cv:rotate`
+aus der Vitis Vision Library wird für die Software-Implementierung `cv::rotate` aus der OpenCV Library genutzt. @img:hw-vs-sw zeigt die
+durchschnittliche Dauer einer Rotation abhängig von der Grad-Zahl der Rotation. Dabei stellt sich die hardware-basierte Implementierung als
+konsequent langsamer als die software-basierte Implementierung heraus. Die Ursache hierfür ist unklar, aber eine mögliche Erklärung könnte darin
+liegen, dass die OpenCV Funktion bereits sehr gut optimiert ist und eventuell Operationen auf später verschiebt. Beispielsweise kann `cv::Mat` aus
+nicht zusammenhängenden Speicherbereichen aufgebaut sein, was beim Zuschneiden von Bilder genutzt wird. Gleichzeitig wurde wenig
+Optimierungsaufwand in die hardware-basierte Implementierung gesteckt. Auffällig ist auch, dass die Software-Rotation um 0 Grad fast keine
+Verzögerung aufweist, während die Hardware-Rotation 1,5ms benötigt. Hier ist die Ursache klar: In Software geschieht lediglich eine
+Variablen-Zuweisung ohne Kopieren des unterliegenden Bild-Speichers, während die Hardware-Implementierung das gesamte Bild in einen neuen
+Speicherbereich kopiert.
+
+#figure(
+  image("resources/hw-vs-sw/hw-vs-sw.png"),
+  caption: [Durchschnittliche Dauer der Rotation],
+) <img:hw-vs-sw>
+
+Bei Betrachtung der Verzögerung durch andere Code-Teile zeigt sich außerdem, dass die Bild-Rotation nicht der kritische Teil ist. Dieser ist
+dominiert durch die Aufnahme des Bildes mit durchschnittlich 130ms Verzögerung. Ebenso benötigt die Umwandlung des Bildes zu schwarz-weiß 4,5ms und
+übersteigt somit, zumindest bei der reinen Software-Implementierung, die Rotationszeit von weniger als 1,5ms. Das bekannte Zitat von Donald Knuth
+"premature optimization is the root of all evil" @knuth-programming-art[p. 671] erweist sich somit erneut als wahr. Eine vorherige Zeitmessung hätte gezeigt, dass sich eine Hardware-Implementierung der Rotation aus Performance-Sicht hier nicht lohnt. Glücklicherweise liegt der Fokus hier
+jedoch auf Kennenlernen der High-Level-Synthese liegt.
 
 = Fazit
 
-Zusammenfassend lässt sich sagen, dass die praktische Umsetzung eines High-Level-Synthese-Projekts sehr lehrreich war. Schwierig gestaltet sich vor allem, dass die Dokumentation teilweise unvollständig oder fehlerhaft ist sowie dass die Fehlermeldungen von Xilinx nichts immer hilfreich
-sind. Von der Performance-Seite her hat sich gezeigt, dass .
-*TODO*
-- performance? measure first? premature opt = root of evil
+Zusammenfassend lässt sich sagen, dass die praktische Umsetzung eines High-Level-Synthese-Projekts sehr lehrreich war. Schwierig gestaltet sich vor allem, dass die Dokumentation teilweise unvollständig oder fehlerhaft ist sowie dass die Fehlermeldungen von Xilinx nicht immer hilfreich sind.
+Von der Performance-Seite her hat sich gezeigt, dass eine Messung vor Optimierungen immer sinnvoll sind.
 
 Die vollständige Implementierung des Projekts findet sich unter https://github.com/ede1998/camera_rotate @project-impl.
 
