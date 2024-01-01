@@ -93,29 +93,44 @@
 ]
 
 #slide(title: "Parameter")[
-  `xf::cv::rotate<`#highlight(fill: red)[IN_WIDTH,OUT_WIDTH,TYPE,]#highlight(fill: green, uncover("3-")[TILE_SZ,])#highlight(fill: blue, uncover("2-")[ROWS,COLS,])#highlight(fill: green, uncover("3-")[NPC])
-	`>`
+  `rotate<`#highlight(fill: red)[IN_WIDTH,OUT_WIDTH,TYPE,]#highlight(fill: green, uncover("3-")[TILE_SZ,])#highlight(fill: blue, uncover("2-")[ROWS,COLS,])#highlight(fill: green, uncover("3-")[NPC])`>`
 
-	/ #highlight(fill: red, [`INPUT_PTR_WIDTH,OUTPUT_PTR_WIDTH,TYPE`]): Tried different combinations, only `8,8, XF_8UC1` worked
+	/ #highlight(fill: red, [`INPUT_PTR_WIDTH,OUTPUT_PTR_WIDTH,TYPE`]): Tried different combinations, only `8,8,XF_8UC1` worked
 	#uncover("2-")[/ #highlight(fill: blue, [`ROWS,COLS`]): <= 515x515px (otherwise `SEGFAULT` in co-sim), careful with non-square images]
-	#uncover("3-")[/ #highlight(fill: green, [`TILE_SZ,NPC`]): *TODO*]
+	#uncover("3-")[/ #highlight(fill: green, [`TILE_SZ,NPC`]): 128 seems optimal size, only 1px per cycle works]
 	#pdfpc.speaker-note(
     ```md
 		- WIDTH,TYPE: Eingabe/Ausgabe-Bitbreite eines Pixels und Pixel-Format (Kanäle, Bitbreite), unklar: mögliche Inkonsistenz?
-		- COLS/ROWS: Fehlerursache unklar, max mit bin. Suche gefunden. Bei nicht quadratischen Bilder und Rot um 90/270:
+		- COLS,ROWS: Fehlerursache unklar, max mit bin. Suche gefunden. Bei nicht quadratischen Bilder und Rot um 90/270:
 		  Achtung Seitenlängen vertauschen, sonst Pixel an falscher Position
+		- NPC,TILE_SIZE: beeinflusst Arbeitsweise Alg., 128 optimal, 2er Potenz von 2 bis 1024 probiert, NPC nur mit 1px pro Zyklus statt 2 -> sonst Assertion Failure
 		```
 	)
 ]
 
-#slide(title: "Ressource Usage and Performance")[
-	*TODO*
-	- Ressource usage ($<10%$)independent from `COLS`/`ROWS`
+#slide(title: "Resource Usage and Performance")[
+	- Resource usage ($<10%$) independent from `COLS`/`ROWS`
+	- BRAM usage scales with `TILE_SIZE`, others independent
+
+	#align(center, image("resources/tile-size/resources.png", height: 60%))
+
+	#align(top + center, image("resources/tile-size/latency.png", width: 64%))
+
 	#pdfpc.speaker-note(
     ```md
-		- Grund: Memory Map
+		# Slide 1
+		- konnte nicht viel variieren, da oft einfach Fehler
+		- Grund `COLS/ROWS`: Memory Map
+		- `TILE_SIZE` = 1024: 7-faches des verfügbaren BRAMs
+		
+
+		# Slide 2
+		- Variation der `TILE_SIZE` -> Performance am besten bei 128, =2 ausgeblendet, da 7x langsamer
+		- II sehr ähnlich
+		- minimum gleich, da dort rotation um 0 Grad -> einfaches Kopieren mit for-loop -> TILE_SIZE nicht genutzt
 		```
 	)
+
 ]
 
 #slide(title: "Problems")[
