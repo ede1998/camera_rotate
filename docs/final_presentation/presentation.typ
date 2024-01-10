@@ -114,23 +114,37 @@
 
 	#align(center, image("resources/tile-size/resources.png", height: 60%))
 
-	#align(top + center, image("resources/tile-size/latency.png", width: 64%))
-
 	#pdfpc.speaker-note(
     ```md
-		# Slide 1
 		- konnte nicht viel variieren, da oft einfach Fehler
 		- Grund `COLS/ROWS`: Memory Map
 		- `TILE_SIZE` = 1024: 7-faches des verfügbaren BRAMs
-		
+		```
+	)
+]
 
-		# Slide 2
+#slide()[
+	#align(center, image("resources/tile-size/latency.png", width: 67%))
+	#pdfpc.speaker-note(
+    ```md
 		- Variation der `TILE_SIZE` -> Performance am besten bei 128, =2 ausgeblendet, da 7x langsamer
 		- II sehr ähnlich
 		- minimum gleich, da dort rotation um 0 Grad -> einfaches Kopieren mit for-loop -> TILE_SIZE nicht genutzt
 		```
 	)
+]
 
+#slide()[
+	#align(center, image("resources/hw-vs-sw/hw-vs-sw.png", width: 74%))
+	#pdfpc.speaker-note(
+    ```md
+		- Vergleich mit reiner Software-Implementierung
+		- SW schneller
+		- keine Übertragung der Bilddaten, aber viel mehr: opencv gut optimiert, Bild muss nicht zsmhängen, ggf. gar keine Pixelvertauschung
+		- Rotation nicht so gut für FPGA, da Pixel-Bewegung nicht lokal begrenzt
+		- immer erst messen, dann optimieren :D
+		```
+	)
 ]
 
 #slide(title: "Problems")[
